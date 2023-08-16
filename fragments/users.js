@@ -29,6 +29,7 @@ export const ME = gql`
       hideInvoiceDesc
       hideFromTopUsers
       hideCowboyHat
+      clickToLoadImg
       wildWestMode
       greeterMode
       lastCheckedJobs
@@ -51,6 +52,7 @@ export const SETTINGS_FIELDS = gql`
     hideInvoiceDesc
     hideFromTopUsers
     hideCowboyHat
+    clickToLoadImg
     nostrPubkey
     nostrRelays
     wildWestMode
@@ -79,13 +81,13 @@ ${SETTINGS_FIELDS}
 mutation setSettings($tipDefault: Int!, $turboTipping: Boolean!, $fiatCurrency: String!, $noteItemSats: Boolean!,
   $noteEarning: Boolean!, $noteAllDescendants: Boolean!, $noteMentions: Boolean!, $noteDeposits: Boolean!,
   $noteInvites: Boolean!, $noteJobIndicator: Boolean!, $noteCowboyHat: Boolean!, $hideInvoiceDesc: Boolean!,
-  $hideFromTopUsers: Boolean!, $hideCowboyHat: Boolean!,
+  $hideFromTopUsers: Boolean!, $hideCowboyHat: Boolean!, $clickToLoadImg: Boolean!,
   $wildWestMode: Boolean!, $greeterMode: Boolean!, $nostrPubkey: String, $nostrRelays: [String!]) {
   setSettings(tipDefault: $tipDefault, turboTipping: $turboTipping,  fiatCurrency: $fiatCurrency,
     noteItemSats: $noteItemSats, noteEarning: $noteEarning, noteAllDescendants: $noteAllDescendants,
     noteMentions: $noteMentions, noteDeposits: $noteDeposits, noteInvites: $noteInvites,
     noteJobIndicator: $noteJobIndicator, noteCowboyHat: $noteCowboyHat, hideInvoiceDesc: $hideInvoiceDesc,
-    hideFromTopUsers: $hideFromTopUsers, hideCowboyHat: $hideCowboyHat,
+    hideFromTopUsers: $hideFromTopUsers, hideCowboyHat: $hideCowboyHat, clickToLoadImg: $clickToLoadImg,
     wildWestMode: $wildWestMode, greeterMode: $greeterMode, nostrPubkey: $nostrPubkey, nostrRelays: $nostrRelays) {
       ...SettingsFields
     }
@@ -110,6 +112,7 @@ export const USER_SEARCH =
 gql`
   query searchUsers($q: String!, $limit: Int, $similarity: Float) {
     searchUsers(q: $q, limit: $limit, similarity: $similarity) {
+      id
       name
       streak
       hideCowboyHat
@@ -139,6 +142,7 @@ export const TOP_USERS = gql`
   query TopUsers($cursor: String, $when: String, $by: String) {
     topUsers(cursor: $cursor, when: $when, by: $by) {
       users {
+        id
         name
         streak
         hideCowboyHat
@@ -158,6 +162,7 @@ export const TOP_COWBOYS = gql`
   query TopCowboys($cursor: String) {
     topCowboys(cursor: $cursor) {
       users {
+        id
         name
         streak
         hideCowboyHat

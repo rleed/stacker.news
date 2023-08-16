@@ -52,7 +52,7 @@ export default function Settings ({ ssrData }) {
   return (
     <CenterLayout>
       <div className='py-3 w-100'>
-        <h2 className='mb-2 text-left'>settings</h2>
+        <h2 className='mb-2 text-start'>settings</h2>
         <Form
           initial={{
             tipDefault: settings?.tipDefault || 21,
@@ -69,6 +69,7 @@ export default function Settings ({ ssrData }) {
             hideInvoiceDesc: settings?.hideInvoiceDesc,
             hideFromTopUsers: settings?.hideFromTopUsers,
             hideCowboyHat: settings?.hideCowboyHat,
+            clickToLoadImg: settings?.clickToLoadImg,
             wildWestMode: settings?.wildWestMode,
             greeterMode: settings?.greeterMode,
             nostrPubkey: settings?.nostrPubkey ? bech32encode(settings.nostrPubkey) : '',
@@ -215,6 +216,11 @@ export default function Settings ({ ssrData }) {
           <Checkbox
             label={<>hide my cowboy hat</>}
             name='hideCowboyHat'
+            groupClassName='mb-0'
+          />
+          <Checkbox
+            label={<>click to load external images</>}
+            name='clickToLoadImg'
           />
           <div className='form-label'>content</div>
           <Checkbox
@@ -248,7 +254,7 @@ export default function Settings ({ ssrData }) {
           <AccordianItem
             headerColor='var(--bs-body-color)'
             show={settings?.nostrPubkey}
-            header={<h4 className='text-left'>nostr <small><a href='https://github.com/nostr-protocol/nips/blob/master/05.md' target='_blank' rel='noreferrer'>NIP-05</a></small></h4>}
+            header={<h4 className='text-start'>nostr <small><a href='https://github.com/nostr-protocol/nips/blob/master/05.md' target='_blank' rel='noreferrer'>NIP-05</a></small></h4>}
             body={
               <>
                 <Input
@@ -270,7 +276,7 @@ export default function Settings ({ ssrData }) {
             <SubmitButton variant='info' className='ms-auto mt-1 px-4'>save</SubmitButton>
           </div>
         </Form>
-        <div className='text-left w-100'>
+        <div className='text-start w-100'>
           <div className='form-label'>saturday newsletter</div>
           <Button href='https://mail.stacker.news/subscription/form' target='_blank'>(re)subscribe</Button>
           {settings?.authMethods && <AuthMethods methods={settings.authMethods} />}
