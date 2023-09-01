@@ -1,4 +1,5 @@
-import { useQuery } from '@apollo/client'
+import Button from 'react-bootstrap/Button'
+import { gql, useQuery, useMutation } from '@apollo/client'
 import Link from 'next/link'
 import { getGetServerSideProps } from '../api/ssrApollo'
 import Layout from '../components/layout'
@@ -12,9 +13,11 @@ import { Checkbox, Form } from '../components/form'
 import { useRouter } from 'next/router'
 import Item from '../components/item'
 import { CommentFlat } from '../components/comment'
-import { Fragment } from 'react'
+import { useEffect } from 'react'
 import ItemJob from '../components/item-job'
 import PageLoading from '../components/page-loading'
+import { useMe } from '../components/me'
+import { CsvRequest, CsvRequestStatus } from '../api/constants'
 
 export const getServerSideProps = getGetServerSideProps({ query: WALLET_HISTORY, authRequired: true })
 
@@ -166,6 +169,39 @@ export default function Satistics ({ ssrData }) {
 
   const { walletHistory: { facts, cursor } } = data || ssrData
 
+  const me = useMe()
+  const makeCsvRequest = async () => {
+    const { error } = await csvRequest({ variables: { csvRequest: CsvRequest.FULL_REPORT } })
+    if (error) {
+      throw new Error({ message: error.toString() })
+    }
+  }
+  const cancelCsvRequest = async () => {
+    const { error } = await csvRequest({ variables: { csvRequest: CsvRequest.NO_REQUEST } })
+    if (error) {
+      throw new Error({ message: error.toString() })
+    }
+  }
+  const [csvRequest] = useMutation(gql`
+  mutation csvRequest($csvRequest: CsvRequest!) {
+    csvRequest(csvRequest: $csvRequest)
+  }
+`, {
+    update (cache, { data: { csvRequest } }) {
+      cache.modify({
+        id: `User:${me.id}`,
+        fields: {
+          csvRequest: () => csvRequest
+        }
+      })
+    }
+  })
+  useEffect(() => {
+    if (me.csvRequest === CsvRequest.FULL_REPORT && me.csvRequestStatus === CsvRequestStatus.FULL_REPORT) {
+      cancelCsvRequest()
+    }
+  }, [me.csvRequest, me.CsvRequestStatus])
+
   return (
     <Layout>
       <div className='mt-3'>
@@ -178,7 +214,7 @@ export default function Satistics ({ ssrData }) {
             spent: included('spent')
           }}
         >
-          <div className='d-flex justify-content-around flex-wrap'>
+          <div className={`${styles.options} d-flex justify-content-around flex-wrap`}>
             <Checkbox
               label='invoice' name='invoice' inline
               checked={included('invoice')}
@@ -199,6 +235,17 @@ export default function Satistics ({ ssrData }) {
               checked={included('spent')}
               handleChange={c => filterRoutePush('spent', c)}
             />
+            <div className='form-group undefined'>
+              {
+                me.csvRequest === CsvRequest.NO_REQUEST
+                  ? (
+                    <Button variant='success' onClick={makeCsvRequest}>Request CSV</Button>
+                    )
+                  : (
+                    <Button variant='danger' onClick={cancelCsvRequest}>Cancel CSV</Button>
+                    )
+              }
+            </div>
           </div>
         </Form>
         <div className='py-2 px-0 mb-0 mw-100'>
